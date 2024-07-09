@@ -1,0 +1,29 @@
+version: '3.9'
+services:
+  localstack: # LocalStack container
+    environment:
+      # Set an env var to use later in the code
+      CORS_ALLOW_ORIGIN: http://localhost:4566
+      AWS_ENDPOINT: http://localstack:4566
+      
+
+    image: localstack/localstack:latest
+    ports:
+      # Map the port so you can access the API from the host machine
+      - 4566:4566
+    volumes:
+      # Here you mount your setup file so it will be executed
+      # when the container starts
+      - ./localstack-setup.sh:/etc/localstack/init/ready.d/script.sh
+
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres  # Updated username
+      POSTGRES_PASSWORD: postgres  # Updated password
+      POSTGRES_DB: logins
+    ports:
+      - "5432:5432"
+    volumes:
+      - "./postgres:/var/lib/postgresql/data"
+      - "./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql"    
